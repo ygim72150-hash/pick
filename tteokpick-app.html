@@ -1,0 +1,898 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>떡픽 앱 · 나에게 맞는 떡볶이 밀키트</title>
+<meta name="description" content="양념·맵기·떡·단맛·가격대를 고르면 떡볶이 밀키트 3개를 추천해 드려요. 전체 보기, 찜, 비교, 랜덤 뽑기까지.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jua&family=IBM+Plex+Sans+KR:wght@400;500;600;700&display=swap">
+<style>
+:root {
+  --bg: #ffffff; --band: #fff4ec; --ink: #2a1a15; --muted: #6b544c; --line: #f3dccb;
+  --chili: #e8452c; --chili-text: #c9341c; --chili-ink: #ffffff; --chili-soft: #ffe6d6;
+  --heat-1: #ffd8b5; --heat-2: #fdb07e; --heat-3: #f47c4a; --heat-4: #e8452c; --heat-5: #8e1b1b;
+  --card: #ffffff; --stripe: #fbe7da; --scrim: rgba(36, 26, 23, .55); --toast: #2a1a15;
+  --display: "Jua", "IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+  --body: "IBM Plex Sans KR", "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", sans-serif;
+  --radius: 18px; --wrap: 1080px;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #171211; --band: #221815; --ink: #f8ece6; --muted: #c8b0a6; --line: #42302a;
+    --chili: #ff6a4d; --chili-text: #ff8a70; --chili-ink: #1a0f0e; --chili-soft: #3d1f17;
+    --heat-5: #c22626; --card: #1e1613; --stripe: #2a1d19; --scrim: rgba(0,0,0,.65); --toast: #f8ece6;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #171211; --band: #221815; --ink: #f8ece6; --muted: #c8b0a6; --line: #42302a;
+  --chili: #ff6a4d; --chili-text: #ff8a70; --chili-ink: #1a0f0e; --chili-soft: #3d1f17;
+  --heat-5: #c22626; --card: #1e1613; --stripe: #2a1d19; --scrim: rgba(0,0,0,.65); --toast: #f8ece6;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0; background: var(--bg); color: var(--ink);
+  font-family: var(--body); font-size: 17px; line-height: 1.6;
+  word-break: keep-all; overflow-wrap: anywhere;
+}
+h1, h2, h3, p, ul, ol { margin: 0; }
+button { font: inherit; color: inherit; }
+a { color: inherit; }
+.wrap { max-width: var(--wrap); margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left)); padding-right: max(16px, env(safe-area-inset-right)); }
+:focus-visible { outline: 3px solid var(--chili); outline-offset: 2px; }
+
+/* ===== 위 메뉴 ===== */
+.top { position: sticky; top: 0; z-index: 30; background: color-mix(in srgb, var(--bg) 92%, transparent); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
+.top .wrap { display: flex; align-items: center; gap: 10px; min-height: 60px; flex-wrap: wrap; padding-top: 8px; padding-bottom: 8px; }
+.logo { font-family: var(--display); font-size: 28px; color: var(--chili-text); line-height: 1; text-decoration: none; margin-right: auto; }
+.logo small { font-family: var(--body); font-size: 13px; font-weight: 700; color: var(--muted); margin-left: 4px; }
+.tabs { display: flex; gap: 6px; }
+.tab { border: 2px solid var(--chili); color: var(--chili-text); background: var(--bg); border-radius: 999px; padding: 5px 14px; font-size: 15px; font-weight: 700; text-decoration: none; white-space: nowrap; display: inline-flex; align-items: center; gap: 4px; }
+.tab[aria-current="page"] { background: var(--chili); color: var(--chili-ink); }
+.tab .cnt { font-size: 13px; min-width: 20px; height: 20px; border-radius: 999px; display: inline-grid; place-items: center; padding: 0 5px; background: var(--chili-soft); color: var(--chili-text); }
+.tab[aria-current="page"] .cnt { background: var(--chili-ink); color: var(--chili); }
+@media (max-width: 640px) {
+  .tabs { order: 3; width: 100%; }
+  .tab { flex: 1; justify-content: center; padding: 5px 6px; font-size: 14px; }
+}
+
+/* ===== 공통 ===== */
+main { padding-bottom: 120px; }
+.view { padding-top: 20px; }
+.head { display: grid; gap: 8px; margin-bottom: 18px; }
+.eyebrow { justify-self: start; font-size: 14px; font-weight: 700; color: var(--chili-text); border: 2px solid var(--chili); border-radius: 999px; padding: 2px 12px; background: var(--bg); }
+.title { font-family: var(--display); font-weight: 400; font-size: clamp(28px, 6vw, 40px); line-height: 1.2; color: var(--chili); text-wrap: balance; }
+.lead { color: var(--muted); font-size: 16px; }
+.hero-band { background-image: repeating-linear-gradient(90deg, var(--stripe) 0 1px, transparent 1px 9px); border-bottom: 1px solid var(--line); padding: 20px 0 18px; }
+.hero-band .head { margin-bottom: 0; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 48px; padding: 0 22px; border-radius: 999px; border: 0; font-weight: 700; font-size: 17px; cursor: pointer; text-decoration: none; }
+.btn-main { background: var(--chili); color: var(--chili-ink); box-shadow: 0 8px 20px -10px var(--chili); }
+.btn-main.dim { opacity: .55; box-shadow: none; }
+.btn-line { background: var(--bg); color: var(--ink); border: 2px solid var(--line); }
+.btn-dark { background: var(--ink); color: var(--bg); }
+.btn:disabled { opacity: .45; cursor: default; }
+.btn svg { width: 18px; height: 18px; }
+.notice { background: var(--chili-soft); color: var(--ink); border-radius: 14px; padding: 10px 14px; font-weight: 600; font-size: 15px; }
+.notice.soft { background: var(--band); color: var(--muted); font-weight: 500; }
+.note { color: var(--muted); font-size: 14px; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* ===== 선택 칩 ===== */
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { border: 2px solid var(--line); background: var(--bg); color: var(--ink); border-radius: 999px; padding: 6px 14px; font-weight: 700; font-size: 15px; cursor: pointer; min-height: 40px; display: inline-flex; align-items: center; gap: 6px; }
+.chip[aria-pressed="true"] { background: var(--chili); border-color: var(--chili); color: var(--chili-ink); }
+.chip:disabled { opacity: .4; cursor: default; }
+.chip small { font-weight: 500; font-size: 13px; opacity: .85; }
+.dot { display: inline-block; width: .75em; height: .75em; border-radius: 50%; background: var(--h); box-shadow: inset 0 0 0 1px rgba(0,0,0,.1); flex: none; }
+
+/* ===== 추천: 질문 ===== */
+.qgrid { display: grid; gap: 14px; grid-template-columns: 1fr; }
+@media (min-width: 861px) { .qgrid { grid-template-columns: 1fr 1fr; } .q.wide { grid-column: 1 / -1; } }
+.q { background: var(--card); border: 2px solid var(--line); border-radius: var(--radius); padding: 16px; display: grid; gap: 10px; align-content: start; transition: border-color .2s, box-shadow .2s; }
+.q.missing { border-color: var(--chili); box-shadow: 0 0 0 4px var(--chili-soft); }
+.q h2 { font-size: 18px; display: flex; align-items: center; gap: 8px; }
+.q h2 .num { width: 28px; height: 28px; border-radius: 50%; background: var(--chili-soft); color: var(--chili-text); display: inline-grid; place-items: center; font-family: var(--display); font-size: 16px; font-weight: 400; flex: none; }
+.q .help { color: var(--muted); font-size: 14px; margin-top: -4px; }
+.spice-row { display: grid; grid-template-columns: 76px 1fr; gap: 12px; align-items: center; }
+.fire { width: 76px; text-align: center; display: grid; justify-items: center; gap: 2px; }
+.fire svg { width: 64px; height: 64px; color: var(--chili-text); }
+.fire .say { font-size: 12.5px; font-weight: 700; color: var(--chili-text); line-height: 1.3; }
+.fire.pop svg { animation: pop .3s ease; }
+.fire .face { fill: var(--chili-soft); }
+.fire .face-line { fill: none; stroke: var(--chili-soft); stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round; }
+.fire .blush { fill: #ff9e9e; opacity: .85; }
+.fire .drop { fill: #7cc4f0; }
+.fire.none svg { color: var(--line); }
+.fire.none .face { fill: var(--muted); }
+.fire.none .face-line { stroke: var(--muted); }
+.actions { position: sticky; bottom: 0; z-index: 10; margin-top: 16px; padding: 10px 0 calc(12px + env(safe-area-inset-bottom)); background: var(--bg); border-top: 1px solid var(--line); box-shadow: 0 -10px 16px -10px rgba(42,26,21,.12); display: grid; gap: 6px; }
+.actions .row { display: flex; gap: 10px; align-items: center; }
+.actions .btn-main { flex: 1; min-height: 56px; font-size: 19px; }
+.missing-msg { font-size: 15px; font-weight: 700; color: var(--chili-text); }
+.missing-msg:empty { display: none; }
+#goBtn { line-height: 1.25; text-align: center; }
+#goBtn.dim { font-size: 16px; padding: 0 16px; }
+#goBtn .prog { font-family: var(--display); font-weight: 400; font-size: 19px; margin-right: 2px; }
+.missing-msg.flash { animation: flash .6s ease; }
+
+/* ===== 추천 결과 ===== */
+.title-badge { background: var(--card); border: 2px dashed var(--chili); border-radius: var(--radius); padding: 14px 16px; display: grid; gap: 2px; text-align: center; }
+.title-badge .you { font-size: 14px; color: var(--muted); font-weight: 600; }
+.title-badge strong { font-family: var(--display); font-weight: 400; font-size: clamp(26px, 6vw, 34px); color: var(--chili); line-height: 1.25; }
+.title-badge .fun { font-size: 12.5px; color: var(--muted); }
+.picked { display: flex; flex-wrap: wrap; gap: 6px; }
+.picked span { font-size: 14px; font-weight: 700; background: var(--chili-soft); border-radius: 999px; padding: 3px 12px; }
+.share { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.share-box { width: 100%; display: grid; gap: 6px; }
+.share-box textarea { width: 100%; font: 14px/1.4 ui-monospace, Menlo, monospace; padding: 10px; border-radius: 12px; border: 2px solid var(--line); background: var(--band); color: var(--ink); resize: none; }
+.stack { display: grid; gap: 14px; }
+
+/* ===== 카드 ===== */
+.klist { list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
+.klist.one { grid-template-columns: 1fr; max-width: 720px; }
+.kcard { position: relative; background: var(--card); border: 2px solid var(--line); border-radius: var(--radius); padding: 14px; display: grid; gap: 10px; align-content: start; min-width: 0; }
+.kcard.best { border-color: var(--chili); }
+.kcard.cmp-on { border-color: var(--chili); box-shadow: 0 0 0 3px var(--chili-soft); }
+.khead { display: flex; align-items: flex-start; gap: 10px; }
+.rank { flex: none; width: 32px; height: 32px; border-radius: 50%; background: var(--chili); color: var(--chili-ink); display: grid; place-items: center; font-family: var(--display); font-size: 17px; }
+.khead h3 { flex: 1; font-size: 17px; line-height: 1.4; min-width: 0; padding-top: 3px; }
+.heart { position: relative; flex: none; width: 44px; height: 44px; border-radius: 50%; border: 0; background: var(--chili-soft); color: var(--chili); font-size: 22px; line-height: 1; cursor: pointer; display: grid; place-items: center; }
+.heart[aria-pressed="true"] { background: var(--chili); color: var(--chili-ink); }
+.heart.pop { animation: pop .4s ease; }
+.crumb { position: absolute; left: 50%; top: 40%; width: 10px; height: 6px; border-radius: 3px; background: #f6e3cf; box-shadow: 0 0 0 1.5px var(--chili); pointer-events: none; animation: fly .6s ease-out forwards; }
+.crumb.b { animation-name: fly2; }
+.tags { list-style: none; padding: 0; margin: 0; display: flex; flex-wrap: wrap; gap: 6px; }
+.tags li { font-size: 13.5px; font-weight: 600; padding: 2px 10px; border-radius: 12px; background: var(--band); border: 1px solid var(--line); display: inline-flex; align-items: center; gap: 5px; }
+.why { font-size: 15px; }
+.meta { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; font-size: 15px; }
+.meta b { font-size: 18px; font-variant-numeric: tabular-nums; }
+.meta .sub { color: var(--muted); font-size: 13.5px; }
+.warn { background: var(--chili-soft); border-radius: 10px; padding: 6px 12px; font-weight: 600; font-size: 14px; }
+.kbtns { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.cmpb { border: 2px solid var(--line); background: var(--bg); border-radius: 999px; padding: 6px 14px; font-weight: 700; font-size: 14px; cursor: pointer; min-height: 40px; }
+.cmpb[aria-pressed="true"] { border-color: var(--chili); background: var(--chili-soft); color: var(--chili-text); }
+.shop { margin-left: auto; min-height: 40px; padding: 0 16px; font-size: 14px; }
+.alt { font-size: 13.5px; color: var(--muted); }
+
+/* ===== 전체 밀키트 ===== */
+.fbox { background: var(--card); border: 2px solid var(--line); border-radius: var(--radius); }
+.fbox > summary { list-style: none; cursor: pointer; display: flex; align-items: center; gap: 8px; padding: 12px 14px; font-weight: 700; font-size: 16px; min-height: 52px; }
+.fbox > summary::-webkit-details-marker { display: none; }
+.fbox > summary .arrow { width: 22px; height: 22px; border-radius: 50%; background: var(--chili-soft); color: var(--chili-text); display: inline-grid; place-items: center; font-size: 12px; transition: transform .2s; flex: none; }
+.fbox[open] > summary .arrow { transform: rotate(180deg); }
+.fbox > summary .picked-sum { font-weight: 600; font-size: 14px; color: var(--chili-text); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.fbox > summary .picked-sum.none { color: var(--muted); }
+.fbox[open] > summary { border-bottom: 1px solid var(--line); }
+.filters { padding: 12px 14px 14px; display: grid; gap: 10px; }
+.frow { display: grid; grid-template-columns: 58px 1fr; gap: 8px; align-items: start; }
+.frow > span { font-size: 14px; font-weight: 700; color: var(--muted); padding-top: 8px; }
+.filters .chip { min-height: 36px; padding: 4px 12px; font-size: 14px; }
+.toolbar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 14px 0; }
+.toolbar .count { font-weight: 700; font-size: 17px; }
+.toolbar .sorts { display: flex; gap: 6px; flex-wrap: wrap; }
+.toolbar .sorts .chip { min-height: 34px; padding: 3px 11px; font-size: 13.5px; }
+.toolbar .right { margin-left: auto; display: flex; gap: 8px; }
+.dice { background: var(--chili-soft); color: var(--chili-text); border: 0; }
+.dice.busy { opacity: .7; }
+
+/* ===== 빈 화면 ===== */
+.empty { display: grid; justify-items: center; text-align: center; gap: 10px; padding: 34px 16px; background: var(--card); border: 2px dashed var(--line); border-radius: var(--radius); }
+.empty svg { width: 84px; height: 84px; color: var(--chili-text); }
+.empty .face { fill: var(--chili-soft); }
+.empty .face-line { fill: none; stroke: var(--chili-soft); stroke-width: 2.4; stroke-linecap: round; }
+.empty p { color: var(--muted); max-width: 26em; }
+
+/* ===== 비교 ===== */
+.cbar { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(12px + env(safe-area-inset-bottom)); z-index: 25; width: min(560px, calc(100% - 24px)); background: var(--ink); color: var(--bg); border-radius: 18px; padding: 10px 10px 10px 16px; display: flex; align-items: center; gap: 8px; box-shadow: 0 12px 30px -10px rgba(0,0,0,.45); }
+.cbar .txt { flex: 1; min-width: 0; font-size: 14.5px; line-height: 1.35; }
+.cbar .txt b { font-size: 15.5px; }
+.cbar .names { display: block; color: color-mix(in srgb, var(--bg) 70%, transparent); font-size: 13px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cbar button { border: 0; border-radius: 999px; padding: 8px 14px; font-weight: 700; font-size: 14px; cursor: pointer; white-space: nowrap; }
+.cbar .clear { background: transparent; color: var(--bg); border: 1.5px solid color-mix(in srgb, var(--bg) 40%, transparent); }
+.cbar .go { background: var(--chili); color: var(--chili-ink); }
+.ctable-wrap { overflow-x: auto; border-radius: var(--radius); border: 2px solid var(--line); background: var(--card); }
+.ctable { width: 100%; border-collapse: collapse; font-size: 15px; min-width: 320px; }
+.ctable th, .ctable td { padding: 12px 10px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+.ctable thead th { background: var(--chili-soft); font-size: 15px; line-height: 1.35; }
+.ctable tbody th { color: var(--muted); width: 78px; white-space: nowrap; font-size: 14px; }
+.ctable tr:last-child > * { border-bottom: 0; }
+.ctable .same { color: var(--muted); }
+.ctable .rm { margin-top: 6px; border: 1.5px solid var(--line); background: var(--bg); border-radius: 999px; padding: 2px 10px; font-size: 12.5px; font-weight: 700; cursor: pointer; }
+
+/* ===== 뽑기 창 ===== */
+.modal { position: fixed; inset: 0; z-index: 40; background: var(--scrim); display: grid; place-items: center; padding: 16px; }
+.mbox { width: min(440px, 100%); max-height: 100%; overflow: auto; background: var(--bg); border-radius: 22px; padding: 20px; display: grid; gap: 12px; box-shadow: 0 20px 40px -10px rgba(0,0,0,.4); }
+.mtop { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.mtop b { color: var(--chili-text); }
+.pot { display: grid; justify-items: center; gap: 6px; padding: 18px 0 8px; }
+.pot svg { width: 120px; height: 100px; }
+.pot.shake svg { animation: shake .6s ease-in-out; }
+.pot .steam { animation: steam .6s ease-in-out infinite; transform-origin: center bottom; }
+.pot p { font-weight: 700; color: var(--chili-text); }
+.mresult.boing { animation: boing .3s ease-out; }
+
+/* ===== 알림 ===== */
+.toast { position: fixed; left: 50%; bottom: calc(86px + env(safe-area-inset-bottom)); transform: translateX(-50%); z-index: 50; background: var(--toast); color: var(--bg); border-radius: 999px; padding: 9px 18px; font-weight: 700; font-size: 15px; max-width: calc(100% - 32px); text-align: center; box-shadow: 0 10px 24px -10px rgba(0,0,0,.4); }
+.toast.show { animation: toastin .2s ease-out; }
+
+@keyframes pop { 0% { transform: scale(1); } 45% { transform: scale(1.28); } 100% { transform: scale(1); } }
+@keyframes fly { 0% { opacity: 1; transform: translate(-50%, 0) rotate(0); } 100% { opacity: 0; transform: translate(-130%, -34px) rotate(-40deg); } }
+@keyframes fly2 { 0% { opacity: 1; transform: translate(-50%, 0) rotate(0); } 100% { opacity: 0; transform: translate(40%, -38px) rotate(35deg); } }
+@keyframes shake { 0%, 100% { transform: rotate(0); } 20% { transform: rotate(-8deg); } 40% { transform: rotate(7deg); } 60% { transform: rotate(-6deg); } 80% { transform: rotate(4deg); } }
+@keyframes steam { 0%, 100% { opacity: .35; transform: translateY(0); } 50% { opacity: 1; transform: translateY(-4px); } }
+@keyframes boing { 0% { transform: scale(.85); opacity: 0; } 70% { transform: scale(1.04); opacity: 1; } 100% { transform: scale(1); } }
+@keyframes flash { 0%, 100% { opacity: 1; } 30% { opacity: .3; } 60% { opacity: 1; } }
+@keyframes toastin { from { opacity: 0; transform: translate(-50%, 8px); } to { opacity: 1; transform: translate(-50%, 0); } }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  .crumb { display: none; }
+}
+@media (max-width: 480px) {
+  .klist { grid-template-columns: 1fr; }
+  .shop { margin-left: 0; flex: 1; }
+  .frow { grid-template-columns: 1fr; gap: 4px; }
+  .frow > span { padding-top: 0; }
+}
+</style>
+</head>
+<body>
+<noscript>
+  <div style="background:#ffe6d6;color:#2a1a15;padding:14px 16px;font-weight:700;text-align:center">추천을 받으려면 브라우저에서 자바스크립트를 켜 주세요.</div>
+  <div style="max-width:640px;margin:24px auto;padding:0 16px;font-family:sans-serif;line-height:1.6">
+    <h1 style="color:#e8452c">떡픽</h1>
+    <p>양념·맵기·떡·단맛·가격대를 고르면 나에게 맞는 떡볶이 밀키트 3개를 추천해 드려요. 전체 밀키트 보기, 찜, 비교, 랜덤 뽑기도 할 수 있어요.</p>
+  </div>
+</noscript>
+
+<header class="top">
+  <div class="wrap">
+    <a class="logo" href="#recommend" aria-label="떡픽 앱, 추천 화면으로">떡픽<small>앱</small></a>
+    <nav class="tabs" aria-label="메뉴">
+      <a class="tab" href="#recommend" data-tab="recommend">추천받기</a>
+      <a class="tab" href="#all" data-tab="all">전체 밀키트</a>
+      <a class="tab" href="#wish" data-tab="wish">♥ 찜 <span class="cnt" id="wishCount">0</span></a>
+    </nav>
+  </div>
+</header>
+
+<main id="app" tabindex="-1"></main>
+
+<div class="cbar" id="cbar" hidden role="region" aria-label="비교할 밀키트"></div>
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+<div class="modal" id="modal" hidden></div>
+
+<script>
+(() => {
+'use strict';
+
+/* =========================================================
+   1. 밀키트 자료 28개 (웹앱_자료와_기준.md · 2026-11-04 확인)
+   맵기 1~5(신라면 3) · 단맛 1~3 · 가격은 1팩 할인 전 가격
+   ========================================================= */
+const KITS = [
+  {"id": "k01", "name": "고래사 어묵떡볶이", "sauce": "red", "tteok": "rice", "spicy": 1, "sweet": 2, "price": 6900, "reviews": 13209, "shop": "컬리", "url": "https://www.kurly.com/goods/1000342044"},
+  {"id": "k02", "name": "오마뎅 진짜 부산 떡볶이", "sauce": "red", "tteok": "rice", "spicy": 2, "sweet": 3, "price": 7400, "reviews": 44599, "shop": "컬리", "url": "https://www.kurly.com/goods/5119349"},
+  {"id": "k03", "name": "석관동 떡볶이 오리지널", "sauce": "red", "tteok": "wheat", "spicy": 2, "sweet": 2, "price": 7000, "reviews": 79946, "shop": "컬리", "url": "https://www.kurly.com/goods/1000102474"},
+  {"id": "k04", "name": "미미네 옛날 떡볶이", "sauce": "red", "tteok": "wheat", "spicy": 2, "sweet": 2, "price": 6000, "reviews": 11466, "shop": "컬리", "url": "https://www.kurly.com/goods/1001422945", "note": "넓적한 판밀떡이 들어 있어요."},
+  {"id": "k05", "name": "올마레 춘천 국물 닭갈비 떡볶이", "sauce": "red", "tteok": "wheat", "spicy": 1, "sweet": 3, "price": 14900, "reviews": 184907, "shop": "컬리", "url": "https://www.kurly.com/goods/5050290", "note": "닭갈비가 함께 들어 있어요."},
+  {"id": "k06", "name": "부산 상국이네 떡볶이", "sauce": "red", "tteok": "rice", "spicy": 2, "sweet": 2, "price": 8300, "reviews": 18743, "shop": "컬리", "url": "https://www.kurly.com/goods/5116450"},
+  {"id": "k07", "name": "오마뎅 우리 사과 떡볶이", "sauce": "red", "tteok": "both", "spicy": 2, "sweet": 2, "price": 7400, "reviews": 3354, "shop": "컬리", "url": "https://www.kurly.com/goods/1000443579"},
+  {"id": "k08", "name": "풀무원 국물떡볶이", "sauce": "red", "tteok": "both", "spicy": 1, "sweet": 2, "price": 5980, "reviews": 1414, "shop": "컬리", "url": "https://www.kurly.com/goods/1000144421", "note": "컬리는 밀누들떡, 쌀떡은 쿠팡에서 팔아요.", "alt": {"label": "쌀떡은 쿠팡에서", "url": "https://www.coupang.com/vp/products/1478690658"}},
+  {"id": "k09", "name": "서울마님 떡범벅 통모짜 (오리지널)", "sauce": "red", "tteok": "unknown", "spicy": 2, "sweet": 2, "price": 6500, "reviews": 4487, "shop": "컬리", "url": "https://www.kurly.com/goods/1000875611", "note": "상품 페이지에서 \"통모짜 · 오리지널\"을 골라 주세요."},
+  {"id": "k10", "name": "서울마님 떡범벅 콘치즈 (오리지널)", "sauce": "red", "tteok": "unknown", "spicy": 3, "sweet": 3, "price": 6500, "reviews": 4487, "shop": "컬리", "url": "https://www.kurly.com/goods/1000875611", "note": "상품 페이지에서 \"콘치즈 · 오리지널\"을 골라 주세요."},
+  {"id": "k11", "name": "서울마님 떡범벅 통모짜 (매콤)", "sauce": "red", "tteok": "unknown", "spicy": 3, "sweet": 3, "price": 6500, "reviews": 4487, "shop": "컬리", "url": "https://www.kurly.com/goods/1000875611", "note": "상품 페이지에서 \"통모짜 · 매콤\"을 골라 주세요."},
+  {"id": "k12", "name": "서울마님 떡범벅 콘치즈 (매콤)", "sauce": "red", "tteok": "unknown", "spicy": 4, "sweet": 2, "price": 6500, "reviews": 4487, "shop": "컬리", "url": "https://www.kurly.com/goods/1000875611", "note": "상품 페이지에서 \"콘치즈 · 매콤\"을 골라 주세요."},
+  {"id": "k13", "name": "두끼 즉석 떡볶이", "sauce": "red", "tteok": "wheat", "spicy": 2, "sweet": 2, "price": 5870, "reviews": 15332, "shop": "쿠팡", "url": "https://www.coupang.com/vp/products/8663562971", "note": "2팩 묶음(11,740원)으로 팔아요. 상품 페이지에서 \"두끼 즉석 떡볶이\"를 골라 주세요."},
+  {"id": "k14", "name": "석관동 떡볶이 로제", "sauce": "rose", "tteok": "wheat", "spicy": 3, "sweet": 3, "price": 8500, "reviews": 1853, "shop": "컬리", "url": "https://www.kurly.com/goods/1000811960"},
+  {"id": "k15", "name": "두끼 로제 떡볶이", "sauce": "rose", "tteok": "wheat", "spicy": 2, "sweet": 2, "price": 6200, "reviews": 3769, "shop": "쿠팡", "url": "https://www.coupang.com/vp/products/6344425465", "note": "2팩 묶음(12,400원)으로 팔아요."},
+  {"id": "k16", "name": "대림선 로제 떡볶이", "sauce": "rose", "tteok": "rice", "spicy": 1, "sweet": 2, "price": 3480, "reviews": 534, "shop": "쿠팡", "url": "https://www.coupang.com/vp/products/8238008227", "note": "2팩 묶음(6,960원)으로 팔아요."},
+  {"id": "k17", "name": "풀무원 밀누들 로제떡볶이", "sauce": "rose", "tteok": "wheat", "spicy": 2, "sweet": null, "price": 5980, "reviews": 39, "shop": "컬리", "url": "https://www.kurly.com/goods/1002062312", "note": "국수처럼 긴 밀누들떡이에요."},
+  {"id": "k18", "name": "추억의 국민학교 분모자 로제 떡볶이", "sauce": "rose", "tteok": "wheat", "spicy": 2, "sweet": 2, "price": 7900, "reviews": 457, "shop": "컬리", "url": "https://www.kurly.com/goods/1000665034"},
+  {"id": "k19", "name": "풀무원 우리동네 떡볶이 짜장", "sauce": "jjajang", "tteok": "wheat", "spicy": 1, "sweet": 3, "price": 4480, "reviews": 92, "shop": "컬리", "url": "https://www.kurly.com/goods/1002062310"},
+  {"id": "k20", "name": "오마뎅 진짜 짜장 떡볶이", "sauce": "jjajang", "tteok": "rice", "spicy": 1, "sweet": 3, "price": 6290, "reviews": 1734, "shop": "쿠팡", "url": "https://www.coupang.com/vp/products/6610953638"},
+  {"id": "k21", "name": "할머니분식 찐한 짜장 떡볶이 (순한맛)", "sauce": "jjajang", "tteok": "wheat", "spicy": 2, "sweet": 2, "price": 5650, "reviews": 215, "shop": "쿠팡", "url": "https://www.coupang.com/vp/products/8635753717", "note": "순한맛이지만 어린아이에게는 매울 수 있어요."},
+  {"id": "k22", "name": "제이키친 짜장 떡볶이", "sauce": "jjajang", "tteok": "both", "spicy": 2, "sweet": 2, "price": 7500, "reviews": 33041, "shop": "컬리", "url": "https://www.kurly.com/goods/5011236", "note": "고추장이 따로 들어 있어 맵기를 조절할 수 있어요. 현미떡도 있어요."},
+  {"id": "k23", "name": "제이키친 순한짜장 떡볶이", "sauce": "jjajang", "tteok": "both", "spicy": 1, "sweet": 1, "price": 7200, "reviews": 9972, "shop": "컬리", "url": "https://www.kurly.com/goods/5031645"},
+  {"id": "k24", "name": "석관동 떡볶이 기름 떡볶이", "sauce": "oil", "tteok": "both", "spicy": 2, "sweet": 2, "price": 6000, "reviews": 15817, "shop": "컬리", "url": "https://www.kurly.com/goods/1000832114"},
+  {"id": "k25", "name": "쿡생 딱좋은 1인분 기름떡볶이", "sauce": "oil", "tteok": "rice", "spicy": 2, "sweet": 2, "price": 4300, "reviews": 76, "shop": "쿠팡", "url": "https://www.coupang.com/vp/products/6704505993", "note": "2봉 묶음(8,600원)으로 팔아요."},
+  {"id": "k26", "name": "핫이슈 기름 떡볶이", "sauce": "oil", "tteok": "wheat", "spicy": 2, "sweet": 2, "price": 8650, "reviews": 182, "shop": "쿠팡", "url": "https://www.coupang.com/vp/products/8773590568", "note": "2팩 묶음(17,300원)으로 팔아요."},
+  {"id": "k27", "name": "푸딩팩토리 할매 기름떡볶이", "sauce": "oil", "tteok": "rice", "spicy": 4, "sweet": 2, "price": 8900, "reviews": 14, "shop": "쿠팡", "url": "https://www.coupang.com/vp/products/7385537703", "note": "2팩 묶음(17,800원)으로 팔아요."},
+  {"id": "k28", "name": "서울마님 의성마늘 기름떡볶이", "sauce": "oil", "tteok": "wheat", "spicy": 3, "sweet": 2, "price": 4000, "reviews": 142, "shop": "컬리", "url": "https://www.kurly.com/goods/1001450223"}
+];
+const BY_ID = Object.fromEntries(KITS.map(k => [k.id, k]));
+
+const SAUCE = { red: '빨간 양념', rose: '로제', jjajang: '짜장', oil: '기름' };
+const SAUCE_ORDER = ['red', 'rose', 'jjajang', 'oil'];
+const SPICY = { 1: '거의 안 매움', 2: '살짝 매콤', 3: '신라면 정도', 4: '꽤 매움', 5: '아주 매움' };
+const SWEET_TXT = { 1: '덜 달아요', 2: '보통이에요', 3: '달달해요' };
+const SWEET_SHORT = { 1: '덜 단 편', 2: '보통', 3: '달달' };
+const TTEOK_TAG = { rice: '쌀떡', wheat: '밀떡', both: '쌀떡·밀떡 선택', unknown: '떡 확인 필요' };
+const TTEOK_TXT = { rice: '쌀떡이에요.', wheat: '밀떡이에요.', both: '밀떡과 쌀떡 중에서 고를 수 있어요.', unknown: '떡 종류는 상품 페이지에서 확인해 주세요.' };
+const BANDS = [
+  { label: '5천 원 미만', max: 4999 },
+  { label: '5천~7천 원', max: 6999 },
+  { label: '7천~9천 원', max: 8999 },
+  { label: '9천 원 이상', max: Infinity },
+];
+const bandOf = p => BANDS.findIndex(b => p <= b.max);
+const won = n => n.toLocaleString('ko-KR') + '원';
+const PRICE_NOTE = '가격은 2026년 11월 4일 기준이라 지금과 다를 수 있어요.';
+const reduceMotion = () => window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+/* =========================================================
+   2. 추천 점수 규칙 (추천_점수_규칙.md 그대로)
+   ========================================================= */
+const score = (k, a) => {
+  let s = k.sauce === a.s ? 40 : 0;
+  const d = Math.abs(k.spicy - a.h); s += d === 0 ? 30 : d === 1 ? 20 : d === 2 ? 5 : 0;
+  s += k.tteok === 'unknown' ? 10 : (k.tteok === 'both' || k.tteok === a.t) ? 20 : 0;
+  if (k.sweet == null) s += 5; else { const w = Math.abs(k.sweet - a.w); s += w === 0 ? 10 : w === 1 ? 5 : 0; }
+  if (a.p !== 'any') { const over = bandOf(k.price) - (a.p - 1); if (over > 0) s -= 10 * over; }
+  return s;
+};
+const recommend = a => KITS.map(k => ({ k, s: score(k, a), m: k.sauce === a.s ? 1 : 0 }))
+  .sort((x, y) => y.m - x.m || y.s - x.s || y.k.reviews - x.k.reviews).slice(0, 3);
+const reasons = (k, a) => {
+  const out = [];
+  out.push(k.sauce === a.s ? `고르신 ${SAUCE[k.sauce]} 떡볶이예요.` : `고르신 양념은 아니지만, 다른 취향이 잘 맞는 ${SAUCE[k.sauce]} 떡볶이예요.`);
+  out.push(`리뷰를 세어 보니 맵기는 ${k.spicy}단계(${SPICY[k.spicy]})${k.spicy === a.h ? '로 원하신 맵기와 같아요.' : '예요.'}`);
+  out.push(TTEOK_TXT[k.tteok]);
+  if (k.sweet != null) out.push(`단맛은 ${SWEET_TXT[k.sweet]}.`);
+  if (k.note) out.push(k.note);
+  return out.join(' ');
+};
+const priceWarn = (k, a) => {
+  if (a.p === 'any') return '';
+  const max = BANDS[a.p - 1].max; if (k.price <= max) return '';
+  return `고르신 가격대보다 약 ${won(Math.round((k.price - max) / 100) * 100)} 비싸요.`;
+};
+
+/* 떡볶이 칭호: [맵기 말] + [양념 말] + [떡 말] */
+const T_SPICE = { 1: '순둥순둥', 2: '살짝매콤', 3: '딱좋게매운', 4: '화끈한', 5: '불꽃같은' };
+const T_SAUCE = { red: '빨간맛', rose: '로제', jjajang: '짜장', oil: '기름' };
+const T_TTEOK = { rice: '쌀떡러', wheat: '밀떡러' };
+const nickname = a => `${T_SPICE[a.h]} ${T_SAUCE[a.s]} ${T_TTEOK[a.t]}`;
+
+/* =========================================================
+   3. 질문 5개
+   ========================================================= */
+const QUESTIONS = [
+  { key: 's', label: '양념', title: '어떤 양념이 좋아요?', options: SAUCE_ORDER.map(v => ({ v, t: SAUCE[v] })) },
+  { key: 'h', label: '맵기', title: '얼마나 매운 게 좋아요?', help: '신라면이 3단계예요.', options: [1, 2, 3, 4, 5].map(v => ({ v, t: `${v}단계`, s: SPICY[v] })) },
+  { key: 't', label: '떡', title: '어떤 떡이 좋아요?', options: [{ v: 'rice', t: '쌀떡' }, { v: 'wheat', t: '밀떡' }] },
+  { key: 'w', label: '단맛', title: '단맛은 어느 정도가 좋아요?', options: [{ v: 1, t: '덜 달게' }, { v: 2, t: '보통' }, { v: 3, t: '달게' }] },
+  { key: 'p', label: '가격대', title: '가격대는 얼마가 좋아요?', help: '1팩 기준이에요.', options: BANDS.map((b, i) => ({ v: i + 1, t: b.label })).concat({ v: 'any', t: '가격 상관없음' }) },
+];
+const SAY = { 0: '골라 주세요', 1: '거의 안 매워요', 2: '살짝 매콤해요', 3: '신라면 정도예요', 4: '꽤 매워요', 5: '아주 매워요' };
+
+/* 불꽃 표정 (고민 카드의 불꽃 모양 재사용) */
+const FLAME = 'M24 4c2 8 12 12 12 24a12 12 0 0 1-24 0c0-6 3-9 6-12 0 4 2 6 4 6-2-7 0-13 2-18z';
+const fireSVG = lv => {
+  const faces = {
+    0: '<circle class="face" cx="20.5" cy="30" r="1.8"/><circle class="face" cx="27.5" cy="30" r="1.8"/><path class="face-line" d="M21.5 36h5"/>',
+    1: '<path class="face-line" d="M18.5 30.5q2-2.6 4 0M25.5 30.5q2-2.6 4 0"/><path class="face-line" d="M19.5 34.5q4.5 4.5 9 0"/>',
+    2: '<ellipse class="face" cx="20.5" cy="29.5" rx="1.9" ry="2.6"/><ellipse class="face" cx="27.5" cy="29.5" rx="1.9" ry="2.6"/><circle class="blush" cx="17.5" cy="34" r="2"/><circle class="blush" cx="30.5" cy="34" r="2"/><path class="face-line" d="M21 35q3 2.4 6 0"/>',
+    3: '<circle class="face" cx="20.5" cy="29.5" r="2.4"/><circle class="face" cx="27.5" cy="29.5" r="2.4"/><path class="face-line" d="M20.5 36.2h7"/>',
+    4: '<ellipse class="face" cx="20.5" cy="29" rx="1.9" ry="2.6"/><ellipse class="face" cx="27.5" cy="29" rx="1.9" ry="2.6"/><ellipse class="face" cx="24" cy="36" rx="2.6" ry="2.2"/><path class="drop" d="M35.5 15c1.6 2.4 2.8 3.9 2.8 5.3a2.8 2.8 0 0 1-5.6 0c0-1.4 1.2-2.9 2.8-5.3z"/>',
+    5: '<path class="face-line" d="M18.5 27.5l3.5 2-3.5 2M29.5 27.5l-3.5 2 3.5 2"/><ellipse class="face" cx="24" cy="36.5" rx="3.4" ry="2.8"/><path class="drop" d="M36 12c1.8 2.6 3 4.2 3 5.7a3 3 0 0 1-6 0c0-1.5 1.2-3.1 3-5.7z"/><path class="drop" d="M9.5 18c1.4 2 2.4 3.3 2.4 4.5a2.4 2.4 0 0 1-4.8 0c0-1.2 1-2.5 2.4-4.5z"/><path class="drop" d="M17.6 32.5c.9 1.4 1.5 2.2 1.5 3a1.5 1.5 0 0 1-3 0c0-.8.6-1.6 1.5-3z"/>',
+  };
+  return `<svg viewBox="0 0 48 48" aria-hidden="true"><path fill="currentColor" d="${FLAME}"/>${faces[lv]}</svg>`;
+};
+const BOWL_SVG = '<svg viewBox="0 0 48 48" fill="currentColor" aria-hidden="true"><rect x="12" y="9" width="10" height="7" rx="3.5" transform="rotate(-18 17 12.5)"/><rect x="24" y="8" width="11" height="7" rx="3.5" transform="rotate(14 29.5 11.5)"/><path d="M5 19h38a19 19 0 0 1-38 0z"/><ellipse class="face" cx="18.5" cy="26" rx="2.2" ry="3"/><ellipse class="face" cx="29.5" cy="26" rx="2.2" ry="3"/><path class="face-line" d="M20 34.5q4-3 8 0"/><path d="M38 7c1.6 2.4 3 4 3 5.6a3 3 0 0 1-6 0c0-1.6 1.4-3.2 3-5.6z" opacity=".55"/></svg>';
+const POT_SVG = '<svg viewBox="0 0 120 100" aria-hidden="true"><g fill="none" stroke="var(--muted)" stroke-width="3" stroke-linecap="round"><path class="steam" d="M42 22c-6-6 6-10 0-16"/><path class="steam" d="M60 20c-6-6 6-10 0-16" style="animation-delay:.2s"/><path class="steam" d="M78 22c-6-6 6-10 0-16" style="animation-delay:.4s"/></g><rect x="14" y="40" width="10" height="8" rx="3" fill="var(--ink)"/><rect x="96" y="40" width="10" height="8" rx="3" fill="var(--ink)"/><path d="M22 34h76v34a20 20 0 0 1-20 20H42a20 20 0 0 1-20-20z" fill="var(--chili)"/><path d="M22 34h76v8H22z" fill="var(--chili-text)"/><rect x="34" y="27" width="18" height="10" rx="5" fill="#f6e3cf" stroke="var(--chili-text)" stroke-width="2" transform="rotate(-12 43 32)"/><rect x="62" y="26" width="20" height="10" rx="5" fill="#f6e3cf" stroke="var(--chili-text)" stroke-width="2" transform="rotate(10 72 31)"/><ellipse cx="50" cy="60" rx="3" ry="4" fill="var(--chili-soft)"/><ellipse cx="70" cy="60" rx="3" ry="4" fill="var(--chili-soft)"/><path d="M53 70q7 6 14 0" fill="none" stroke="var(--chili-soft)" stroke-width="3" stroke-linecap="round"/></svg>';
+const ARROW = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+const OUT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8"/></svg>';
+
+/* =========================================================
+   4. 저장 (localStorage) · 막혀도 멈추지 않게
+   ========================================================= */
+const WISH_KEY = 'tteokpick.wish.v1';
+const store = { ok: true, broke: false, removed: 0 };
+let wish = [];
+const loadWish = () => {
+  let raw = null;
+  try { raw = window.localStorage.getItem(WISH_KEY); store.ok = true; }
+  catch (_) { store.ok = false; return; }
+  if (raw == null) { wish = []; return; }
+  let arr;
+  try { arr = JSON.parse(raw); } catch (_) { arr = null; }
+  if (!Array.isArray(arr) || arr.some(x => typeof x !== 'string')) {
+    wish = []; store.broke = true; saveWish(); return;
+  }
+  const uniq = [...new Set(arr)];
+  const keep = uniq.filter(id => BY_ID[id]);
+  store.removed += uniq.length - keep.length;
+  wish = keep;
+  if (keep.length !== arr.length) saveWish();
+};
+const saveWish = () => {
+  if (!store.ok) return;
+  try { window.localStorage.setItem(WISH_KEY, JSON.stringify(wish)); }
+  catch (_) { store.ok = false; }
+};
+const isWished = id => wish.includes(id);
+
+/* =========================================================
+   5. 상태
+   ========================================================= */
+const answers = { s: null, h: null, t: null, w: null, p: null };
+const filters = { s: 'all', h: 'all', t: 'all', p: 'all' };
+let sortKey = 'reviews';
+let compare = [];          /* 비교에 담은 id (저장하지 않음) */
+let lastPick = null;       /* 랜덤 뽑기: 방금 나온 id */
+let bannerMsg = '';        /* 다음 화면에 한 번 보여 줄 안내 */
+let filtersOpen = null;    /* 거르기 펼침: 처음엔 휴대폰 접힘 · PC 펼침, 이후 사용자가 고른 대로 */
+
+/* =========================================================
+   6. 알림 (겹치지 않게 마지막 것 하나만)
+   ========================================================= */
+const toastEl = document.getElementById('toast');
+let toastTimer = 0;
+const toast = msg => {
+  clearTimeout(toastTimer);
+  toastEl.textContent = msg; toastEl.hidden = false;
+  toastEl.classList.remove('show'); void toastEl.offsetWidth; toastEl.classList.add('show');
+  toastTimer = setTimeout(() => { toastEl.hidden = true; }, 1500);
+};
+
+/* =========================================================
+   7. 화면 바꾸기 (주소 끝 #…)
+   ========================================================= */
+const app = document.getElementById('app');
+let navHash = location.hash || '';
+const parseHash = () => {
+  const h = (navHash || '').replace(/^#/, '');
+  const [name, qs = ''] = h.split('?');
+  const params = {};
+  qs.split('&').filter(Boolean).forEach(p => { const [k, v = ''] = p.split('='); try { params[decodeURIComponent(k)] = decodeURIComponent(v); } catch (_) { params[k] = v; } });
+  return { name: name || 'recommend', params };
+};
+let current = '';
+const go = hash => {
+  navHash = hash;
+  if (location.hash !== hash) { try { location.hash = hash; } catch (_) {} }
+  route();
+};
+const replaceHash = hash => {
+  navHash = hash;
+  try { history.replaceState(null, '', location.pathname + location.search + hash); } catch (_) {}
+};
+const route = () => {
+  const { name, params } = parseHash();
+  closeModal(true);
+  let view = name;
+  if (view === 'result') {
+    const a = readResultParams(params);
+    if (!a) { bannerMsg = '링크 정보가 올바르지 않아서 처음부터 골라 주세요.'; resetAnswers(); view = 'recommend'; replaceHash('#recommend'); renderRecommend(); }
+    else { Object.assign(answers, a); renderResult(a); }
+  } else if (view === 'all') renderAll();
+  else if (view === 'wish') renderWish();
+  else if (view === 'compare') renderCompare(params);
+  else { view = 'recommend'; renderRecommend(); }
+  setTab(view === 'result' ? 'recommend' : view === 'compare' ? '' : view);
+  if (current !== navHash) { window.scrollTo({ top: 0, behavior: 'instant' }); current = navHash; }
+  renderCbar();
+};
+const setTab = key => {
+  document.querySelectorAll('.tab').forEach(t => { if (t.dataset.tab === key) t.setAttribute('aria-current', 'page'); else t.removeAttribute('aria-current'); });
+  const titles = { recommend: '추천받기', all: '전체 밀키트', wish: '찜', '': '비교하기' };
+  document.title = `${titles[key] ?? '떡픽'} · 떡픽 앱`;
+};
+const resetAnswers = () => { Object.keys(answers).forEach(k => { answers[k] = null; }); };
+
+/* 공유 링크 읽기 · 만들기 */
+const readResultParams = p => {
+  const s = p.s, h = Number(p.h), t = p.t, w = Number(p.w);
+  const pr = p.p === 'any' ? 'any' : Number(p.p);
+  const okS = SAUCE_ORDER.includes(s), okH = [1, 2, 3, 4, 5].includes(h), okT = t === 'rice' || t === 'wheat';
+  const okW = [1, 2, 3].includes(w), okP = pr === 'any' || [1, 2, 3, 4].includes(pr);
+  return okS && okH && okT && okW && okP ? { s, h, t, w, p: pr } : null;
+};
+const resultHash = a => `#result?s=${a.s}&h=${a.h}&t=${a.t}&w=${a.w}&p=${a.p}`;
+const pageBase = () => location.href.split('#')[0];
+
+/* =========================================================
+   8. 카드
+   ========================================================= */
+const cardHTML = (k, opt = {}) => {
+  const w = isWished(k.id), c = compare.includes(k.id);
+  return `<li class="kcard${opt.best ? ' best' : ''}${c ? ' cmp-on' : ''}" data-id="${k.id}">
+    <div class="khead">${opt.rank ? `<span class="rank" aria-hidden="true">${opt.rank}</span>` : ''}
+      <h3>${opt.rank ? `<span class="sr">${opt.rank}위 </span>` : ''}${esc(k.name)}</h3>
+      <button class="heart" type="button" data-act="wish" aria-pressed="${w}" aria-label="${esc(k.name)} 찜하기">${w ? '♥' : '♡'}</button></div>
+    <ul class="tags"><li>${SAUCE[k.sauce]}</li><li><i class="dot" style="--h:var(--heat-${k.spicy})" aria-hidden="true"></i>맵기 ${k.spicy}단계 · ${SPICY[k.spicy]}</li><li>${TTEOK_TAG[k.tteok]}</li></ul>
+    ${opt.why ? `<p class="why">${esc(opt.why)}</p>` : ''}
+    <div class="meta"><span>가격 <b>${won(k.price)}</b></span><span class="sub">1팩 · ${esc(k.shop)} · 단맛 ${k.sweet == null ? '정보 없음' : SWEET_SHORT[k.sweet]} · 후기 ${k.reviews.toLocaleString('ko-KR')}</span></div>
+    ${!opt.why && k.note ? `<p class="note">${esc(k.note)}</p>` : ''}
+    ${opt.warn ? `<p class="warn">${esc(opt.warn)}</p>` : ''}
+    <div class="kbtns">
+      <button class="cmpb" type="button" data-act="cmp" aria-pressed="${c}">${c ? '✓ 비교 담음' : '+ 비교'}</button>
+      <a class="btn btn-dark shop" href="${esc(k.url)}" target="_blank" rel="noopener">${esc(k.shop)}에서 보기 ${OUT}</a>
+    </div>
+    ${k.alt ? `<a class="alt" href="${esc(k.alt.url)}" target="_blank" rel="noopener">${esc(k.alt.label)} ↗</a>` : ''}
+  </li>`;
+};
+const emptyHTML = (msg, btnLabel, hash) => `<div class="empty">${BOWL_SVG}<p>${esc(msg)}</p>${btnLabel ? `<a class="btn btn-main" href="${hash}">${esc(btnLabel)}</a>` : ''}</div>`;
+
+/* =========================================================
+   9. 추천 화면 (질문 5개를 한 화면에)
+   ========================================================= */
+const renderRecommend = () => {
+  const banner = bannerMsg; bannerMsg = '';
+  app.innerHTML = `
+  <section class="hero-band"><div class="wrap head">
+    <span class="eyebrow">추천받기</span>
+    <h1 class="title">취향을 고르면 밀키트 3개를 골라 드려요</h1>
+    <p class="lead">5가지 질문에 답하고 '추천 보기'를 눌러 주세요.</p>
+  </div></section>
+  <div class="wrap view">
+    ${banner ? `<p class="notice" role="alert" style="margin-bottom:14px">${esc(banner)}</p>` : ''}
+    <div class="qgrid">
+      ${QUESTIONS.map((q, i) => `
+      <section class="q${q.key === 's' || q.key === 'h' || q.key === 'p' ? ' wide' : ''}" data-q="${q.key}" aria-labelledby="qt-${q.key}">
+        <h2 id="qt-${q.key}"><span class="num">${i + 1}</span>${q.title}</h2>
+        ${q.help ? `<p class="help">${q.help}</p>` : ''}
+        ${q.key === 'h' ? `<div class="spice-row"><div class="fire" id="fire" aria-hidden="true"></div>` : ''}
+        <div class="chips" role="group" aria-labelledby="qt-${q.key}">
+          ${q.options.map(o => `<button class="chip" type="button" data-q="${q.key}" data-v="${o.v}" aria-pressed="${answers[q.key] === o.v}">${q.key === 'h' ? `<i class="dot" style="--h:var(--heat-${o.v})" aria-hidden="true"></i>` : ''}${o.t}${o.s ? ` <small>${o.s}</small>` : ''}</button>`).join('')}
+        </div>
+        ${q.key === 'h' ? `</div>` : ''}
+      </section>`).join('')}
+    </div>
+    <div class="actions">
+      <p class="missing-msg" id="missingMsg" aria-live="polite"></p>
+      <div class="row">
+        <button class="btn btn-line" type="button" id="resetBtn">다시 고르기</button>
+        <button class="btn btn-main" type="button" id="goBtn">추천 보기 ${ARROW}</button>
+      </div>
+    </div>
+  </div>`;
+  updateFire(false); updateGo();
+};
+const missingKeys = () => QUESTIONS.filter(q => answers[q.key] == null);
+const updateGo = () => {
+  const miss = missingKeys();
+  const btn = document.getElementById('goBtn'); if (!btn) return;
+  const done = QUESTIONS.length - miss.length;
+  btn.classList.toggle('dim', miss.length > 0);
+  btn.setAttribute('aria-disabled', miss.length > 0 ? 'true' : 'false');
+  btn.innerHTML = miss.length
+    ? `<span><span class="prog">${done} / ${QUESTIONS.length}</span> 골랐어요 · ${miss.length}개 더 고르면 추천받기</span>`
+    : `추천 보기 ${ARROW}`;
+  const m = document.getElementById('missingMsg');
+  if (!miss.length) m.textContent = '';
+  document.querySelectorAll('.q').forEach(el => { if (answers[el.dataset.q] != null) el.classList.remove('missing'); });
+};
+const updateFire = animate => {
+  const el = document.getElementById('fire'); if (!el) return;
+  const lv = answers.h || 0;
+  el.className = 'fire' + (lv ? '' : ' none');
+  el.innerHTML = fireSVG(lv) + `<span class="say">${SAY[lv]}</span>`;
+  if (animate && !reduceMotion()) { el.classList.add('pop'); }
+};
+const onGo = () => {
+  const miss = missingKeys();
+  if (miss.length) {
+    document.querySelectorAll('.q').forEach(el => el.classList.toggle('missing', answers[el.dataset.q] == null));
+    const m = document.getElementById('missingMsg');
+    m.textContent = `아직 고르지 않은 질문이 있어요: ${miss.map(q => q.label).join(', ')}`;
+    m.classList.remove('flash'); void m.offsetWidth; m.classList.add('flash');
+    const first = document.querySelector(`.q[data-q="${miss[0].key}"]`);
+    if (first) { first.scrollIntoView({ behavior: reduceMotion() ? 'auto' : 'smooth', block: 'center' }); const b = first.querySelector('.chip'); if (b) b.focus({ preventScroll: true }); }
+    return;
+  }
+  go(resultHash(answers));
+};
+
+/* =========================================================
+   10. 추천 결과
+   ========================================================= */
+const renderResult = a => {
+  const list = recommend(a);
+  const same = KITS.filter(k => k.sauce === a.s);
+  const notes = [];
+  if (a.p !== 'any' && same.filter(k => k.price <= BANDS[a.p - 1].max).length < 3) notes.push('고르신 가격대에 맞는 밀키트가 적어서, 조금 비싼 것도 함께 보여 드려요.');
+  if (!same.some(k => k.spicy === a.h)) notes.push('고르신 맵기와 딱 맞는 밀키트가 없어서, 가장 가까운 맵기로 골랐어요.');
+  const pick = [SAUCE[a.s], `맵기 ${a.h}단계`, a.t === 'rice' ? '쌀떡' : '밀떡', `단맛 ${['', '덜 달게', '보통', '달게'][a.w]}`, a.p === 'any' ? '가격 상관없음' : BANDS[a.p - 1].label];
+  app.innerHTML = `
+  <section class="hero-band"><div class="wrap head">
+    <span class="eyebrow">추천 결과</span>
+    <h1 class="title">이런 밀키트를 추천해요</h1>
+  </div></section>
+  <div class="wrap view stack">
+    <div class="title-badge"><span class="you">당신은</span><strong>${esc(nickname(a))}</strong><span class="fun">재미로 보는 칭호예요</span></div>
+    <div class="picked" aria-label="고르신 취향">${pick.map(p => `<span>${esc(p)}</span>`).join('')}</div>
+    <div class="share" id="shareArea">
+      <button class="btn btn-line" type="button" id="copyBtn">🔗 결과 링크 복사</button>
+      <button class="btn btn-line" type="button" id="againBtn">다시 고르기</button>
+    </div>
+    ${notes.map(n => `<p class="notice">${esc(n)}</p>`).join('')}
+    <ol class="klist one" aria-label="추천 밀키트 3개">
+      ${list.map(({ k }, i) => cardHTML(k, { rank: i + 1, best: i === 0, why: reasons(k, a), warn: priceWarn(k, a) })).join('')}
+    </ol>
+    <p class="note">맵기·단맛은 쇼핑몰 후기를 세어서 정했어요. ${PRICE_NOTE} 추천은 지금 자료로 다시 계산해요.</p>
+  </div>`;
+};
+const copyLink = () => {
+  const base = pageBase();
+  const url = base + resultHash(answers);
+  const proto = (location.protocol || '').toLowerCase();
+  if (!/^https?:$|^file:$/.test(proto) || /^about:|^blob:/.test(base)) {
+    const area = document.getElementById('shareArea');
+    if (!area.querySelector('.share-box')) area.insertAdjacentHTML('beforeend', `<div class="share-box"><p class="notice soft">미리보기 화면에서는 공유 링크를 만들 수 없어요. 파일을 내려받아 GitHub Pages에 올리면 링크를 쓸 수 있어요.</p></div>`);
+    return;
+  }
+  const done = proto === 'file:' ? '링크를 복사했어요! (내 컴퓨터 파일 주소라 다른 사람은 열 수 없어요)' : '링크를 복사했어요!';
+  const fallback = () => {
+    const area = document.getElementById('shareArea');
+    if (!area.querySelector('.share-box')) {
+      area.insertAdjacentHTML('beforeend', `<div class="share-box"><label class="note" for="shareText">복사가 막혀 있어요. 아래 링크를 길게 눌러 복사해 주세요.</label><textarea id="shareText" rows="3" readonly></textarea></div>`);
+    }
+    const ta = document.getElementById('shareText'); ta.value = url; ta.focus(); ta.select();
+    let ok = false; try { ok = document.execCommand('copy'); } catch (_) {}
+    if (ok) toast(done);
+  };
+  try {
+    if (navigator.clipboard && window.isSecureContext) {
+      navigator.clipboard.writeText(url).then(() => toast(done), fallback);
+    } else fallback();
+  } catch (_) { fallback(); }
+};
+
+/* =========================================================
+   11. 전체 밀키트 · 거르기 · 정렬
+   ========================================================= */
+const tteokOk = (k, t) => t === 'all' ? true : (k.tteok === t || k.tteok === 'both');
+const match = (k, f, skip) =>
+  (skip === 's' || f.s === 'all' || k.sauce === f.s) &&
+  (skip === 'h' || f.h === 'all' || k.spicy === f.h) &&
+  (skip === 't' || tteokOk(k, f.t)) &&
+  (skip === 'p' || f.p === 'all' || bandOf(k.price) === f.p - 1);
+const byName = (x, y) => x.name.localeCompare(y.name, 'ko');
+const SORTS = {
+  reviews: { label: '후기 많은 순', fn: (x, y) => y.reviews - x.reviews || x.price - y.price || byName(x, y) },
+  price: { label: '가격 낮은 순', fn: (x, y) => x.price - y.price || y.reviews - x.reviews || byName(x, y) },
+  mild: { label: '덜 매운 순', fn: (x, y) => x.spicy - y.spicy || y.reviews - x.reviews || byName(x, y) },
+};
+const filtered = () => KITS.filter(k => match(k, filters)).sort(SORTS[sortKey].fn);
+const renderAll = () => {
+  const list = filtered();
+  const isDefault = Object.values(filters).every(v => v === 'all');
+  const hiddenUnknown = filters.t !== 'all' && KITS.some(k => k.tteok === 'unknown' && match(k, filters, 't'));
+  const spiceCount = v => KITS.filter(k => k.spicy === v && match(k, filters, 'h')).length;
+  const row = (key, label, opts) => `<div class="frow"><span id="f-${key}">${label}</span><div class="chips" role="group" aria-labelledby="f-${key}">${opts.map(o => `<button class="chip" type="button" data-f="${key}" data-v="${o.v}" aria-pressed="${filters[key] === o.v}" ${o.dis ? 'disabled' : ''}>${o.t}</button>`).join('')}</div></div>`;
+  const sumParts = [filters.s !== 'all' && SAUCE[filters.s], filters.h !== 'all' && `맵기 ${filters.h}단계`, filters.t !== 'all' && (filters.t === 'rice' ? '쌀떡' : '밀떡'), filters.p !== 'all' && BANDS[filters.p - 1].label].filter(Boolean);
+  if (filtersOpen === null) filtersOpen = !(window.matchMedia && matchMedia('(max-width: 640px)').matches);
+  app.innerHTML = `
+  <section class="hero-band"><div class="wrap head">
+    <span class="eyebrow">전체 밀키트</span>
+    <h1 class="title">밀키트 ${KITS.length}개 모두 보기</h1>
+    <p class="lead">조건을 골라 거르고, 마음에 드는 건 ♡ 찜하거나 비교해 보세요.</p>
+  </div></section>
+  <div class="wrap view">
+    <details class="fbox" id="fbox"${filtersOpen ? ' open' : ''}>
+    <summary><span class="arrow" aria-hidden="true">▼</span>조건 고르기 <span class="picked-sum${sumParts.length ? '' : ' none'}">· ${sumParts.length ? esc(sumParts.join(' · ')) : '전체'}</span></summary>
+    <div class="filters">
+      ${row('s', '양념', [{ v: 'all', t: '전체' }].concat(SAUCE_ORDER.map(v => ({ v, t: SAUCE[v] }))))}
+      ${row('h', '맵기', [{ v: 'all', t: '전체' }].concat([1, 2, 3, 4, 5].map(v => { const n = spiceCount(v); return { v, t: `<i class="dot" style="--h:var(--heat-${v})" aria-hidden="true"></i>${v} <small>(${n})</small>`, dis: n === 0 && filters.h !== v }; })))}
+      ${row('t', '떡', [{ v: 'all', t: '전체' }, { v: 'rice', t: '쌀떡' }, { v: 'wheat', t: '밀떡' }])}
+      ${row('p', '가격대', [{ v: 'all', t: '전체' }].concat(BANDS.map((b, i) => ({ v: i + 1, t: b.label }))))}
+    </div>
+    </details>
+    <div class="toolbar">
+      <span class="count" aria-live="polite">${list.length}개</span>
+      <div class="sorts" role="group" aria-label="정렬">${Object.entries(SORTS).map(([k, s]) => `<button class="chip" type="button" data-sort="${k}" aria-pressed="${sortKey === k}">${s.label}</button>`).join('')}</div>
+      <div class="right">
+        ${isDefault ? '' : '<button class="btn btn-line" type="button" id="resetF" style="min-height:40px;padding:0 14px;font-size:14px">처음으로</button>'}
+        <button class="btn dice" type="button" id="diceBtn" style="min-height:40px;padding:0 14px;font-size:14px" ${list.length ? '' : 'disabled'}>🎲 오늘 뭐 먹지?</button>
+      </div>
+    </div>
+    ${hiddenUnknown ? '<p class="notice soft" style="margin-bottom:12px">떡 종류를 확인하지 못한 4개는 빠졌어요. \'전체\'를 고르면 볼 수 있어요.</p>' : ''}
+    ${list.length ? `<ul class="klist">${list.map(k => cardHTML(k)).join('')}</ul><p class="note" style="margin-top:14px">${PRICE_NOTE}</p>`
+      : emptyHTML('이 조건에 맞는 밀키트가 없어요. 조건을 하나 바꿔 볼까요?', '처음으로', '#all-reset')}
+  </div>`;
+};
+
+/* =========================================================
+   12. 랜덤 뽑기 (보글보글 냄비)
+   ========================================================= */
+const modal = document.getElementById('modal');
+let drawing = false, drawTimer = 0, modalOpener = null;
+const draw = () => {
+  if (drawing) return;
+  const list = filtered(); if (!list.length) return;
+  let pool = list.length > 1 ? list.filter(k => k.id !== lastPick) : list;
+  const k = pool[Math.floor(Math.random() * pool.length)];
+  lastPick = k.id;
+  const label = filters.s === 'all' && filters.h === 'all' && filters.t === 'all' && filters.p === 'all' ? `전체 ${list.length}개` : `거른 ${list.length}개`;
+  if (modal.hidden) { modalOpener = document.activeElement; }
+  modal.hidden = false;
+  const show = () => {
+    drawing = false;
+    modal.innerHTML = `<div class="mbox" role="dialog" aria-modal="true" aria-labelledby="mt">
+      <div class="mtop"><b id="mt">🎲 ${label} 중에서 골랐어요</b><button class="btn btn-line" type="button" data-act="close" style="min-height:36px;padding:0 12px;font-size:14px">닫기</button></div>
+      ${list.length === 1 ? '<p class="notice soft">조건에 맞는 밀키트가 1개예요.</p>' : ''}
+      <ul class="klist one mresult${reduceMotion() ? '' : ' boing'}">${cardHTML(k)}</ul>
+      <button class="btn btn-main" type="button" data-act="redraw">다시 뽑기</button>
+    </div>`;
+    const r = modal.querySelector('[data-act="redraw"]'); if (r) r.focus();
+  };
+  if (reduceMotion()) { show(); return; }
+  drawing = true;
+  const dice = document.getElementById('diceBtn'); if (dice) { dice.textContent = '보글보글…'; dice.classList.add('busy'); }
+  modal.innerHTML = `<div class="mbox" role="dialog" aria-modal="true" aria-label="뽑는 중"><div class="pot shake">${POT_SVG}<p>보글보글…</p></div><button class="btn btn-main" type="button" disabled>보글보글…</button></div>`;
+  clearTimeout(drawTimer);
+  drawTimer = setTimeout(() => { if (dice) { dice.textContent = '🎲 오늘 뭐 먹지?'; dice.classList.remove('busy'); } show(); }, 900);
+};
+const closeModal = silent => {
+  if (modal.hidden) return;
+  clearTimeout(drawTimer); drawing = false;
+  modal.hidden = true; modal.innerHTML = '';
+  const dice = document.getElementById('diceBtn'); if (dice) { dice.textContent = '🎲 오늘 뭐 먹지?'; dice.classList.remove('busy'); }
+  if (!silent && modalOpener && document.contains(modalOpener)) modalOpener.focus();
+};
+
+/* =========================================================
+   13. 찜 목록
+   ========================================================= */
+const renderWish = () => {
+  const notes = [];
+  if (store.broke) { notes.push('찜 정보를 불러오지 못해서 비웠어요. 다시 찜해 주세요.'); store.broke = false; }
+  if (store.removed) { notes.push(`판매가 끝난 밀키트 ${store.removed}개를 찜에서 뺐어요.`); store.removed = 0; }
+  const list = wish.map(id => BY_ID[id]).filter(Boolean);
+  app.innerHTML = `
+  <section class="hero-band"><div class="wrap head">
+    <span class="eyebrow">찜</span>
+    <h1 class="title">찜한 밀키트 ${list.length}개</h1>
+  </div></section>
+  <div class="wrap view stack">
+    <p class="notice soft">${store.ok ? '♥ 찜은 이 기기, 이 브라우저에만 저장돼요. ♥를 다시 누르면 찜에서 빠져요.' : '이 브라우저에서는 찜이 저장되지 않아요. 창을 닫으면 사라져요.'}</p>
+    ${notes.map(n => `<p class="notice">${esc(n)}</p>`).join('')}
+    ${list.length ? `<ul class="klist">${list.map(k => cardHTML(k)).join('')}</ul><p class="note">${PRICE_NOTE}</p>`
+      : emptyHTML('아직 찜한 떡볶이가 없어요. 마음에 드는 밀키트의 ♡를 눌러 보세요.', '전체 밀키트 보기', '#all')}
+  </div>`;
+};
+const updateWishCount = () => { document.getElementById('wishCount').textContent = wish.length; };
+const toggleWish = (id, btn) => {
+  const on = !isWished(id);
+  wish = on ? [id].concat(wish.filter(x => x !== id)) : wish.filter(x => x !== id);
+  saveWish(); updateWishCount();
+  toast(on ? (store.ok ? '찜했어요 ♥' : '찜했어요 ♥ (창을 닫으면 사라져요)') : '찜에서 뺐어요');
+  document.querySelectorAll(`.kcard[data-id="${id}"] .heart`).forEach(h => { h.setAttribute('aria-pressed', on); h.textContent = on ? '♥' : '♡'; });
+  if (btn && !reduceMotion()) {
+    const h = btn;
+    h.classList.remove('pop'); void h.offsetWidth; h.classList.add('pop');
+    if (on) ['a', 'b'].forEach(c => { const s = document.createElement('span'); s.className = 'crumb ' + c; h.appendChild(s); setTimeout(() => s.remove(), 650); });
+  }
+  if (parseHash().name === 'wish' && !on) {
+    const card = btn && btn.closest('.kcard');
+    renderWish();
+    if (card) { const n = app.querySelector('.kcard .heart'); if (n) n.focus({ preventScroll: true }); }
+  }
+};
+
+/* =========================================================
+   14. 비교하기
+   ========================================================= */
+const cbar = document.getElementById('cbar');
+const renderCbar = () => {
+  const nm = parseHash().name;
+  if (!compare.length || nm === 'compare' || nm === 'recommend' || !['all', 'wish', 'result'].includes(nm)) { cbar.hidden = true; return; }
+  const names = compare.map(id => BY_ID[id].name).join(' · ');
+  cbar.hidden = false;
+  cbar.innerHTML = `<div class="txt"><b>비교할 밀키트 ${compare.length} / 2</b>${compare.length < 2 ? ' · 하나 더 골라 주세요' : ''}<span class="names">${esc(names)}</span></div>
+    <button class="clear" type="button" data-act="clear">비우기</button>
+    ${compare.length === 2 ? `<button class="go" type="button" data-act="compare">비교하기</button>` : ''}`;
+};
+const toggleCompare = id => {
+  if (compare.includes(id)) compare = compare.filter(x => x !== id);
+  else if (compare.length >= 2) { toast('2개까지 고를 수 있어요. 하나를 빼고 다시 골라 주세요'); return; }
+  else compare = compare.concat(id);
+  refreshCompareUI();
+};
+const refreshCompareUI = () => {
+  document.querySelectorAll('.kcard').forEach(c => {
+    const on = compare.includes(c.dataset.id); c.classList.toggle('cmp-on', on);
+    const b = c.querySelector('.cmpb'); if (b) { b.setAttribute('aria-pressed', on); b.textContent = on ? '✓ 비교 담음' : '+ 비교'; }
+  });
+  renderCbar();
+};
+const renderCompare = p => {
+  const a = BY_ID[p.a], b = BY_ID[p.b];
+  const head = `<section class="hero-band"><div class="wrap head"><span class="eyebrow">비교하기</span><h1 class="title">두 밀키트 비교</h1></div></section>`;
+  if (a && b && a.id === b.id) { app.innerHTML = head + `<div class="wrap view">${emptyHTML('서로 다른 밀키트 2개를 골라 주세요.', '전체 밀키트 보기', '#all')}</div>`; return; }
+  if (!a || !b) { app.innerHTML = head + `<div class="wrap view">${emptyHTML('비교할 밀키트를 찾지 못했어요.', '전체 밀키트 보기', '#all')}</div>`; return; }
+  compare = [a.id, b.id];
+  const rows = [
+    ['양념', k => SAUCE[k.sauce]],
+    ['맵기', k => `${k.spicy}단계 · ${SPICY[k.spicy]}`],
+    ['떡', k => TTEOK_TAG[k.tteok]],
+    ['단맛', k => k.sweet == null ? '정보 없음' : SWEET_TXT[k.sweet]],
+    ['가격 (1팩)', k => won(k.price)],
+    ['판매처', k => k.shop],
+    ['후기 수', k => k.reviews.toLocaleString('ko-KR')],
+    ['비고', k => k.note || '-'],
+  ];
+  app.innerHTML = head + `<div class="wrap view stack">
+    <div class="ctable-wrap"><table class="ctable">
+      <thead><tr><th scope="col"><span class="sr">항목</span></th>${[a, b].map(k => `<th scope="col">${esc(k.name)}<br><button class="rm" type="button" data-act="rm" data-id="${k.id}">빼기</button></th>`).join('')}</tr></thead>
+      <tbody>${rows.map(([l, f]) => { const x = f(a), y = f(b); return `<tr><th scope="row">${l}</th><td class="${x === y ? 'same' : ''}">${esc(x)}</td><td class="${x === y ? 'same' : ''}">${esc(y)}</td></tr>`; }).join('')}
+      <tr><th scope="row"><span class="sr">쇼핑몰</span></th>${[a, b].map(k => `<td><a class="btn btn-dark" style="min-height:38px;padding:0 12px;font-size:13.5px" href="${esc(k.url)}" target="_blank" rel="noopener">${esc(k.shop)}에서 보기 ${OUT}</a></td>`).join('')}</tr>
+      <tr><th scope="row"><span class="sr">찜</span></th>${[a, b].map(k => `<td><button class="cmpb" type="button" data-act="wish-plain" data-id="${k.id}" aria-pressed="${isWished(k.id)}">${isWished(k.id) ? '♥ 찜함' : '♡ 찜하기'}</button></td>`).join('')}</tr>
+      </tbody></table></div>
+    <p class="note">회색 글씨는 두 밀키트가 같은 항목이에요. ${PRICE_NOTE}</p>
+    <a class="btn btn-line" href="#all">다른 밀키트 고르기</a>
+  </div>`;
+};
+
+/* =========================================================
+   15. 버튼 처리 (양식 제출 없이 클릭으로 바로)
+   ========================================================= */
+document.addEventListener('click', e => {
+  const t = e.target.closest('button, a');
+  if (!t) { if (e.target === modal && !drawing) closeModal(); return; }
+  const href = t.tagName === 'A' ? t.getAttribute('href') : null;
+  if (href && href.startsWith('#') && href !== '#all-reset') { e.preventDefault(); go(href); return; }
+  /* 질문 선택 */
+  if (t.matches('.chip[data-q]')) {
+    const q = t.dataset.q; const opt = QUESTIONS.find(x => x.key === q).options.find(o => String(o.v) === t.dataset.v);
+    answers[q] = opt.v;
+    t.parentElement.querySelectorAll('.chip').forEach(c => c.setAttribute('aria-pressed', c === t));
+    if (q === 'h') updateFire(true);
+    updateGo(); return;
+  }
+  if (t.id === 'goBtn') { onGo(); return; }
+  if (t.id === 'resetBtn') { resetAnswers(); renderRecommend(); return; }
+  if (t.id === 'againBtn') { go('#recommend'); return; }
+  if (t.id === 'copyBtn') { copyLink(); return; }
+  /* 거르기 · 정렬 */
+  if (t.matches('.chip[data-f]')) {
+    const k = t.dataset.f; const v = t.dataset.v === 'all' ? 'all' : (k === 's' || k === 't') ? t.dataset.v : Number(t.dataset.v);
+    filters[k] = v; lastPick = null; renderAll();
+    const again = app.querySelector(`.chip[data-f="${k}"][data-v="${t.dataset.v}"]`); if (again) again.focus({ preventScroll: true });
+    return;
+  }
+  if (t.matches('.chip[data-sort]')) { sortKey = t.dataset.sort; renderAll(); const again = app.querySelector(`.chip[data-sort="${sortKey}"]`); if (again) again.focus({ preventScroll: true }); return; }
+  if (t.id === 'resetF' || t.getAttribute('href') === '#all-reset') { e.preventDefault(); Object.keys(filters).forEach(k => { filters[k] = 'all'; }); lastPick = null; renderAll(); return; }
+  if (t.id === 'diceBtn') { draw(); return; }
+  /* 카드 · 창 */
+  const act = t.dataset.act;
+  if (act === 'wish') { toggleWish(t.closest('.kcard').dataset.id, t); return; }
+  if (act === 'wish-plain') { toggleWish(t.dataset.id, null); const on = isWished(t.dataset.id); t.setAttribute('aria-pressed', on); t.textContent = on ? '♥ 찜함' : '♡ 찜하기'; return; }
+  if (act === 'cmp') { toggleCompare(t.closest('.kcard').dataset.id); return; }
+  if (act === 'clear') { compare = []; refreshCompareUI(); toast('비교를 비웠어요'); return; }
+  if (act === 'compare') { if (compare.length === 2) go(`#compare?a=${compare[0]}&b=${compare[1]}`); return; }
+  if (act === 'rm') { compare = compare.filter(x => x !== t.dataset.id); go('#all'); toast('비교에서 뺐어요. 하나 더 골라 주세요'); return; }
+  if (act === 'redraw') { draw(); return; }
+  if (act === 'close') { closeModal(); return; }
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && !modal.hidden && !drawing) closeModal(); });
+
+/* 다른 탭에서 찜을 바꾸면 맞추기 */
+const syncWish = () => {
+  const before = JSON.stringify(wish); loadWish();
+  if (JSON.stringify(wish) !== before) {
+    updateWishCount();
+    document.querySelectorAll('.kcard').forEach(c => { const h = c.querySelector('.heart'); if (h) { const on = isWished(c.dataset.id); h.setAttribute('aria-pressed', on); h.textContent = on ? '♥' : '♡'; } });
+    if (parseHash().name === 'wish') renderWish();
+  }
+};
+document.addEventListener('toggle', e => { if (e.target && e.target.id === 'fbox') filtersOpen = e.target.open; }, true);
+window.addEventListener('storage', e => { if (e.key === WISH_KEY) syncWish(); });
+document.addEventListener('visibilitychange', () => { if (!document.hidden) syncWish(); });
+window.addEventListener('hashchange', () => { if (location.hash !== navHash) { navHash = location.hash; route(); } });
+
+/* 시작: 시작 화면 없이 바로 */
+loadWish(); updateWishCount(); route();
+window.__tteokpickApp = { KITS, score, recommend, nickname, filtered, filters, get wish() { return wish; } };
+})();
+</script>
+</body>
+</html>
